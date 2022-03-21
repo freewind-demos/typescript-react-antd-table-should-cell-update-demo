@@ -1,5 +1,7 @@
 import {Form, Input} from 'antd';
 import React, {useContext, useEffect, useRef, useState} from 'react';
+import EditableContext from './EditableContext';
+import {InputRef} from 'rc-input/es/interface';
 
 interface Item {
   key: string;
@@ -12,7 +14,7 @@ interface EditableCellProps {
   title: React.ReactNode;
   editable: boolean;
   children: React.ReactNode;
-  dataIndex: string;
+  dataIndex: keyof Item;
   record: Item;
   handleSave: (record: Item) => void;
 }
@@ -29,7 +31,7 @@ const EditableCell: React.FC<EditableCellProps> = (
   }
 ) => {
   const [editing, setEditing] = useState(false);
-  const inputRef = useRef<Input>();
+  const inputRef = useRef<InputRef>(null);
   const form = useContext(EditableContext);
 
   useEffect(() => {
@@ -43,7 +45,7 @@ const EditableCell: React.FC<EditableCellProps> = (
     form.setFieldsValue({[dataIndex]: record[dataIndex]});
   };
 
-  const save = async e => {
+  async function save() {
     try {
       const values = await form.validateFields();
 
@@ -52,7 +54,7 @@ const EditableCell: React.FC<EditableCellProps> = (
     } catch (errInfo) {
       console.log('Save failed:', errInfo);
     }
-  };
+  }
 
   let childNode = children;
 
